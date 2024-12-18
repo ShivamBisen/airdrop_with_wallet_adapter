@@ -39,7 +39,7 @@ const Sendtransaction = () => {
             <p className='text-2xl'>Send Solana</p>
             <form className="flex gap-2" onSubmit={makeTransaction}>
                 <input type="text" id='receiverPublickey' className='p-2 rounded-md' placeholder='Enter the receiver address' />
-                <input type="text" id='amounttest' className='p-2 rounded-md' placeholder='Enter the receiver address' />
+                <input type="text" id='amounttest' className='p-2 rounded-md' placeholder='Enter the amount' />
 
 
                 {/* <input type="number" id='amount' className='p-2 rounded-md' placeholder='Enter the amount' />    */}

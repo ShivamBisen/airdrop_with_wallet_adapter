@@ -11,6 +11,7 @@ const Balance = () => {
         const getBalance = async()=>{
              const fetchedbalance =  await connection.getBalance(wallet.publicKey)
              setBalance(fetchedbalance/LAMPORTS_PER_SOL)
+             
         }
         try{
             getBalance()
