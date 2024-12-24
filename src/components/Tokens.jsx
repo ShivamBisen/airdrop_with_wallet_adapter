@@ -221,7 +221,7 @@ const Tokens = () => {
 				<div className="flex gap-4">
 					<button
 						onClick={handleShowSamples}
-						className="text-sm bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg
+						className="hidden sm:block text-sm bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg
 							transition-colors duration-200 whitespace-nowrap"
 					>
 						{showingSamples ? "Show Real Tokens" : "Show Samples"}

@@ -46,7 +46,7 @@ const Balance = () => {
                 <div className="flex flex-col gap-4">
                     <div className="text-3xl font-bold">
                         {!wallet.connected ? (
-                            <span className="text-gray-500">Wallet not connected</span>
+                            <span className="text-gray-500 ">Wallet not connected</span>
                         ) : isLoading ? (
                             <span className="text-gray-500">Loading...</span>
                         ) : (
