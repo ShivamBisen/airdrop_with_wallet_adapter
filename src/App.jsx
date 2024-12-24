@@ -1,92 +1,67 @@
-import { useState, useMemo } from 'react';
-import './App.css';
-import './output.css';
-
-import React from 'react';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { useState, useMemo } from "react";
+import React from "react";
 import {
-    WalletModalProvider,
-    WalletDisconnectButton,
-    WalletMultiButton
-} from '@solana/wallet-adapter-react-ui';
-import { clusterApiUrl } from '@solana/web3.js';
+	ConnectionProvider,
+	WalletProvider,
+} from "@solana/wallet-adapter-react";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { UnsafeBurnerWalletAdapter } from "@solana/wallet-adapter-wallets";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { clusterApiUrl } from "@solana/web3.js";
 
-// Default styles that can be overridden by your app
-import '@solana/wallet-adapter-react-ui/styles.css';
-import Airdrop from './components/Airdrop';
-import Balance from './components/Balance';
-import Sendtransaction from './components/Transaction';
-import Swap from './components/Swap';
+import "@solana/wallet-adapter-react-ui/styles.css";
+import Navbar from "./components/Navbar";
+import Airdrop from "./components/Airdrop";
+import Balance from "./components/Balance";
+import Sendtransaction from "./components/Transaction";
+import Swap from "./components/Swap";
+import Tokens from "./components/Tokens";
+import TokenMarket from "./components/TokenMarket/TokenMarket";
 
 function App() {
-    const network = WalletAdapterNetwork.Devnet;
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-    const wallets = useMemo(() => [new UnsafeBurnerWalletAdapter()], [network]);
+	const network = WalletAdapterNetwork.Devnet;
+	const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+	const wallets = useMemo(() => [new UnsafeBurnerWalletAdapter()], [network]);
+	const [activeTab, setActiveTab] = useState("Balance");
 
-    // State for active tab
-    const [activeTab, setActiveTab] = useState('Balance');
+	return (
+		<ConnectionProvider endpoint={endpoint}>
+			<WalletProvider wallets={wallets} autoConnect>
+				<WalletModalProvider>
+					<div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+						<Navbar
+							activeTab={activeTab}
+							setActiveTab={setActiveTab}
+						/>
 
-    return (
-        <ConnectionProvider endpoint={endpoint}>
-            <WalletProvider wallets={wallets} autoConnect>
-                <WalletModalProvider>
-                    <div className="flex flex-col gap-7 items-center">
-                        {/* Wallet Buttons */}
-                        <div className="flex gap-6">
-                            <WalletMultiButton />
-                            <WalletDisconnectButton />
-                        </div>
+						<main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+							<div className="space-y-8">
+								{/* Main Content */}
+								<div className="bg-gray-800 rounded-xl p-8 shadow-xl border border-gray-700">
+									{activeTab === "Balance" && <Balance />}
+									{activeTab === "Airdrop" && <Airdrop />}
+									{activeTab === "SendTransaction" && (
+										<Sendtransaction />
+									)}
+									{activeTab === "Swap" && <Swap />}
+								</div>
 
-                        {/* Tab Navigation */}
-                        <div className="flex gap-4">
-                            <button
-                                className={`px-4 py-2 rounded ${
-                                    activeTab === 'Balance' ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                                }`}
-                                onClick={() => setActiveTab('Balance')}
-                            >
-                                Balance
-                            </button>
-                            <button
-                                className={`px-4 py-2 rounded ${
-                                    activeTab === 'Airdrop' ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                                }`}
-                                onClick={() => setActiveTab('Airdrop')}
-                            >
-                                Airdrop
-                            </button>
-                            <button
-                                className={`px-4 py-2 rounded ${
-                                    activeTab === 'SendTransaction' ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                                }`}
-                                onClick={() => setActiveTab('SendTransaction')}
-                            >
-                                Send Transaction
-                            </button>
-                            <button
-                                className={`px-4 py-2 rounded ${
-                                    activeTab === 'Swap' ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                                }`}
-                                onClick={() => setActiveTab('Swap')}
-                            >
-                                Swap
-                            </button>
-                        </div>
+								{/* Tokens Section */}
+								<div className="bg-gray-800 rounded-xl p-8 shadow-xl border border-gray-700">
+									<Tokens />
+								</div>
 
-                        {/* Conditional Rendering of Components */}
-                        <div className="mt-6">
-                            {activeTab === 'Balance' && <Balance />}
-                            {activeTab === 'Airdrop' && <Airdrop />}
-                            {activeTab === 'SendTransaction' && <Sendtransaction />}
-                            {activeTab === 'Swap' && <Swap />}
-                        </div>
-                    </div>
-                </WalletModalProvider>
-            </WalletProvider>
-        </ConnectionProvider>
-    );
+								{/* Token Market Section */}
+								<div className="bg-gray-800 rounded-xl p-8 shadow-xl border border-gray-700">
+									<TokenMarket />
+								</div>
+							</div>
+						</main>
+					</div>
+				</WalletModalProvider>
+			</WalletProvider>
+		</ConnectionProvider>
+	);
 }
 
 export default App;

@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { VersionedTransaction } from '@solana/web3.js';
 import axios from 'axios';
+import LoadingButton from './LoadingButton';
 
 const Swap = () => {
   const [fromToken, setFromToken] = useState('So11111111111111111111111111111111111111112');
   const [toToken, setToToken] = useState('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v');
   const [amount, setAmount] = useState('100000000');
+  const [isLoading, setIsLoading] = useState(false);
   const wallet = useWallet();
   const { connection } = useConnection();
 
@@ -17,6 +19,7 @@ const Swap = () => {
     }
 
     try {
+      setIsLoading(true);
       const response = await axios.get(
         `https://quote-api.jup.ag/v6/quote?inputMint=${fromToken}&outputMint=${toToken}&amount=${amount}&slippageBps=50`
       );
@@ -32,11 +35,7 @@ const Swap = () => {
 
       const swapTransactionBuf = Buffer.from(swapTransaction, 'base64');
       const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
-
-      // Sign the transaction
       const signedTransaction = await wallet.signTransaction(transaction);
-
-      // Serialize and send the transaction
       const rawTransaction = signedTransaction.serialize();
       const latestBlockHash = await connection.getLatestBlockhash();
 
@@ -54,35 +53,63 @@ const Swap = () => {
       console.log('Transaction confirmed:', txid);
     } catch (error) {
       console.error('Error during swap:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className='flex flex-col '>
-      <h1>Token Swap</h1>
-      <div className=" flex flex-col">
-      <input
-        type="text"
-        placeholder="From Token Mint"
-        className='p-2 rounded-md'
-        value={fromToken}
-        onChange={(e) => setFromToken(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="To Token Mint"
-        className='p-2 rounded-md'
-        value={toToken}
-        onChange={(e) => setToToken(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Amount"
-        className='p-2 rounded-md'
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      /></div>
-      <button className='mt-2' onClick={swap}>Swap</button>
+    <div className="flex flex-col items-center max-w-md mx-auto w-full">
+      <h2 className="text-2xl font-semibold mb-6">Token Swap</h2>
+      
+      <div className="w-full space-y-4">
+        <div className="space-y-2">
+          <label className="text-sm text-gray-400">From Token</label>
+          <input
+            type="text"
+            placeholder="From Token Mint"
+            className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 
+              focus:border-blue-500 focus:outline-none text-white placeholder-gray-400 
+              transition-colors"
+            value={fromToken}
+            onChange={(e) => setFromToken(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm text-gray-400">To Token</label>
+          <input
+            type="text"
+            placeholder="To Token Mint"
+            className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 
+              focus:border-blue-500 focus:outline-none text-white placeholder-gray-400 
+              transition-colors"
+            value={toToken}
+            onChange={(e) => setToToken(e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm text-gray-400">Amount</label>
+          <input
+            type="text"
+            placeholder="Amount"
+            className="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 
+              focus:border-blue-500 focus:outline-none text-white placeholder-gray-400 
+              transition-colors"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        </div>
+
+        <LoadingButton 
+          onClick={swap}
+          loading={isLoading}
+          disabled={!wallet.connected}
+        >
+          {wallet.connected ? 'Swap Tokens' : 'Connect Wallet to Swap'}
+        </LoadingButton>
+      </div>
     </div>
   );
 };
