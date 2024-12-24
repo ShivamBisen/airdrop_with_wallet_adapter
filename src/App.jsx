@@ -18,6 +18,10 @@ import Swap from "./components/Swap";
 import Tokens from "./components/Tokens";
 import TokenMarket from "./components/TokenMarket/TokenMarket";
 
+import { Chart, registerables } from "chart.js";
+
+Chart.register(...registerables);
+
 function App() {
 	const network = WalletAdapterNetwork.Devnet;
 	const endpoint = useMemo(() => clusterApiUrl(network), [network]);
